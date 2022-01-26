@@ -463,6 +463,7 @@ Tire：存储和查找字符串集合的数据结构
 ```cpp
 const int N = 1e5 + 10;
 
+//下标是0的点，即是跟节点，又是空节点
 int son[N][26], cnt[N], idx;
 char str[N];
 
@@ -476,6 +477,7 @@ void insert(char *str) {    //插入--构建trie树
     cnt[p]++;
 }
 
+//查询出现次数
 int query(char *str) {      //查询
     int p = 0;
     for (int i = 0; str[i]; i++) {
@@ -483,8 +485,43 @@ int query(char *str) {      //查询
         if (!son[p][u]) return 0;
         p = son[p][u];
     }
-    return cnt[p];
+    return cnt[p];  
 }
-
 ```
 #### 异或树
+
+### 并查集 （Union并Find查Set集）
+- 将两个元素合并
+- 询问两个元素是否在一个集合中
+
+每个集合用一棵树来表示。树根的编号就是整个集合的编号。
+每个节点存储它的父节点
+p[x]表示x的父节点
+
+- 如何判断树根：`if(p[x] == x)`
+- 如何求x的集合编号：`while (p[x] != x) x = p[x];`
+- 如何合并两个集合：`p[x] = y`
+  
+```cpp
+int find(int x) {
+    if (p[x] != x) p[x] = find(p[x]);
+    return p[x];
+}
+
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i <= n; i++) p[i] = i;
+    while (m--) {
+        char op[2];
+        int a, b;
+        scanf("%s%d%d", op, &a, &b);
+        if (op[0] == 'M') p[find(a)] = find(b);
+        else {
+            if (find(a) == find(b)) puts("Yes");
+            else puts("No");
+        }
+    }
+    return 0;
+}
+```
+#### 路径压缩
