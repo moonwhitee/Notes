@@ -458,7 +458,33 @@ void kmp() {
 
 
 ### trie树
-
+Tire：存储和查找字符串集合的数据结构
+![](Trie1.png)
 ```cpp
+const int N = 1e5 + 10;
+
+int son[N][26], cnt[N], idx;
+char str[N];
+
+void insert(char *str) {    //插入--构建trie树
+    int p = 0;
+    for (int i = 0; str[i]; i++) {
+        int u = str[i] - 'a';
+        if (!son[p][u]) son[p][u] = ++idx;
+        p = son[p][u];
+    }
+    cnt[p]++;
+}
+
+int query(char *str) {      //查询
+    int p = 0;
+    for (int i = 0; str[i]; i++) {
+        int u = str[i] - 'a';
+        if (!son[p][u]) return 0;
+        p = son[p][u];
+    }
+    return cnt[p];
+}
 
 ```
+#### 异或树
