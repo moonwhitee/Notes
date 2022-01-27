@@ -220,7 +220,7 @@ int i = 0, j = 0;
     }
     if (i == n) puts("Yes");
     else puts("No");
-    ```
+```
 
 
 ### 离散化
@@ -489,6 +489,51 @@ int query(char *str) {      //查询
 }
 ```
 #### 异或树
+在给定的 N 个整数 $A_1，A_2……A_N$ 中选出两个进行 xor（异或）运算，得到的结果最大是多少
+b把数字看成二进制数，每一位01就是字母，构建trie树，
+`res = max(res, i xor j)`
+```cpp
+#include <bits/stdc++.h>
+
+
+using namespace std;
+
+const int N = 1e5 + 10, M = 31 * N;
+
+int a[N], son[M][2], idx, n;
+
+void insert(int x) {
+    int p = 0;
+    for (int i = 30; i >= 0; i--) {
+        int u = x >> i & 1;
+        if (!son[p][u]) son[p][u] = ++idx;
+        p = son[p][u];
+    }
+}
+
+int query(int x) {
+    int p = 0, res = 0;
+    for (int i = 30; i >= 0; i--) {
+        int u = x >> i & 1;
+        if (son[p][!u]) p = son[p][!u], res = res * 2 + !u; 
+        else p = son[p][u], res = res * 2 + u;
+    }
+    return res;
+}
+
+int main() {
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) scanf("%d", &a[i]), insert(a[i]);
+    int res = 0;
+    for (int i = 0; i < n; i++) {
+        int t = query(a[i]);
+        res = max(res, a[i] ^ t);
+    }
+    printf("%d\n", res);
+    return 0;
+}
+```
+
 
 ### 并查集 （Union并Find查Set集）
 - 将两个元素合并
@@ -524,4 +569,100 @@ int main() {
     return 0;
 }
 ```
+
+#### 连通块中点的数量
+```cpp
+int find(int x) {
+    if (p[x] != x) p[x] = find(p[x]);
+    return p[x];
+}
+
+int main() {
+    cin >> n >> m;
+    for (int i = 1; i <= n; i++)    p[i] = i, cnt[i] = 1;
+    while (m--) {
+        string op;
+        cin >> op;
+        int a, b;
+        if (op == "C") {
+            cin >> a >> b;
+            a = find(a);
+            b = find(b);
+            if (a != b) {
+                p[a] = b;
+                cnt[b] += cnt[a];
+            }
+        }
+        else if (op == "Q1") {
+            cin >> a >> b;
+            if (find(a) == find(b)) cout << "Yes" << endl;
+            else    cout << "No" << endl;
+        }
+        else {
+            cin >> a;
+            cout << cnt[find(a)] << endl;
+        }
+    }
+    return 0;
+}
+```
+#### 例1--食物链
+d[x]存储的永远是x到p[x]的距离，其目的是为了求x到根节点的距离
+![](食物链1.png)
+```cpp
+//acw240
+#include <iostream>
+
+using namespace std;
+
+const int N = 50010;
+
+int n, m;
+int p[N], d[N];
+
+int find(int x) {
+    if (p[x] != x)
+    {
+        int t = find(p[x]);
+        d[x] += d[p[x]];
+        p[x] = t;
+    }
+    return p[x];
+}
+
+int main() {
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i <= n; i ++ ) p[i] = i;
+    int res = 0;
+    while (m -- ) {
+        int t, x, y;
+        scanf("%d%d%d", &t, &x, &y);
+        if (x > n || y > n) res ++ ;
+        else {
+            int px = find(x), py = find(y);
+            if (t == 1) {
+                if (px == py && (d[x] - d[y]) % 3) res ++ ;
+                else if (px != py) {
+                    p[px] = py;
+                    d[px] = d[y] - d[x];
+                }
+            }
+            else {
+                if (px == py && (d[x] - d[y] - 1) % 3) res ++ ;
+                else if (px != py) {
+                    p[px] = py;
+                    d[px] = d[y] + 1 - d[x];
+                }
+            }
+        }
+    }
+    printf("%d\n", res);
+    return 0;
+}
+
+
+```
 #### 路径压缩
+
+
+  
