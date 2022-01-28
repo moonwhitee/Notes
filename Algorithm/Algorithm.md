@@ -665,4 +665,73 @@ int main() {
 #### 路径压缩
 
 
-  
+### 哈希表
+质数$p$要离2的整数次幂尽可能的远
+#### 拉链法
+```cpp
+const int N = 1e5 + 3;  //大于1e5的第一个质数
+int h[N], e[N], ne[N], idx;
+
+void insert(int x) {
+    int k = (x % N + N) % N;    //防止负数
+    e[idx] = x, ne[idx] = h[k], h[k] = idx++;
+}
+
+bool find(int x) {
+    int k = (x % N + N) % N;
+    for (int i = h[k]; ~i; i = ne[i]) 
+        if (e[i] == x) return true;
+    return false;
+}
+
+int main() {
+    memset(h, -1, sizeof h);
+    int n;
+    scanf("%d", &n);
+    while (n--) {
+        char op[2];
+        int x;
+        scanf("%s%d", op, &x);    //用scanf可以自动屏蔽空格和回车
+        if (*op == 'I') insert(x);
+        else {
+            if (find(x)) puts("Yes");
+            else puts("No");
+        }
+    } 
+    return 0;
+}
+```
+#### 开放寻址法
+```cpp
+const int N = 2e5 + 3, INF = 0x3f3f3f3f; //开二倍的长度
+
+int h[N];
+
+int find(int x) {
+    int k = (x % N + N) % N;
+    while (h[k] != INF && h[k] != x) {
+        k++;
+        if (k == N) k = 0;
+    }
+    return k;
+}
+
+
+int main() {
+    int n;
+    scanf("%d", &n);
+    memset(h, 0x3f, sizeof h);
+    while (n--) {
+        char op[2];
+        int x;
+        scanf("%s%d", op, &x);
+        int k = find(x);
+        if (*op == 'I') h[k] = x;
+        else {
+            if (h[k] != INF) puts("Yes");
+            else puts("No");
+        }
+    }
+    return 0;
+}
+```
